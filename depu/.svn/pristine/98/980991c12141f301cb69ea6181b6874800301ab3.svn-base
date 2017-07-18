@@ -1,0 +1,121 @@
+<?php
+
+namespace App\Repositories\Backend\Hospital;
+
+use App\Models\Tourism\Tourism;
+use Illuminate\Support\Facades\DB;
+use App\Exceptions\GeneralException;
+use App\Repositories\BaseRepository;
+use Illuminate\Database\Eloquent\Model;
+
+/**
+ * Class TourismRepository.
+ */
+class TourismRepository extends BaseRepository
+{
+    const MODEL = Tourism::class;
+
+    public function create(array $input)
+    {
+        $data = $input['data'];
+
+        $tourism = $this->createTourismStub($data);
+
+        DB::transaction(function () use ($tourism) {
+            if ($tourism->save()) {
+
+                // event(new TourismCreated($tourism));
+
+                return true;
+            }
+
+            throw new GeneralException(__('exceptions.backend.create_error'));
+        });
+    }
+
+    public function update(Model $tourism, array $input)
+    {
+        $data = $input['data'];
+
+        $tourism->cover_id    = $input['cover_id'];
+        $tourism->title       = $input['title'];
+        $tourism->desc        = $input['desc'];
+        $tourism->info        = $input['info'];
+
+        DB::transaction(function () use ($tourism) {
+            if ($tourism->save()) {
+
+                // event(new TourismUpdated($tourism));
+
+                return true;
+            }
+
+            throw new GeneralException(__('exceptions.backend.update_error'));
+        });
+    }
+
+    public function delete(Model $tourism)
+    {
+        if ($tourism->is_system == 1) {
+            throw new GeneralException(__('exceptions.backend.cant_delete_system'));
+        }
+        
+        if ($tourism->delete()) {
+            // event(new TourismDeleted($tourism));
+
+            return true;
+        }
+
+        throw new GeneralException(__('exceptions.backend.delete_error'));
+    }
+
+    public function forceDelete($id)
+    {
+        $tourism = $this->query()->withTrashed()->find($id);
+
+        if (is_null($tourism->deleted_at)) {
+            throw new GeneralException(__('exceptions.backend.delete_first'));
+        }
+
+        DB::transaction(function () use ($tourism) {
+            if ($tourism->forceDelete()) {
+                // event(new TourismPermanentlyDeleted($tourism));
+
+                return true;
+            }
+
+            throw new GeneralException(__('exceptions.backend.delete_error'));
+        });
+    }
+
+    public function restore($id)
+    {
+        $tourism = $this->query()->withTrashed()->find($id);
+
+        if (is_null($tourism->deleted_at)) {
+            throw new GeneralException(trans('exceptions.backend.cant_restore'));
+        }
+
+        if ($tourism->restore()) {
+            // event(new TourismRestored($tourism));
+
+            return true;
+        }
+
+        throw new GeneralException(trans('exceptions.backend.restore_error'));
+    }
+
+    protected function createTourismStub($input)
+    {
+        $tourism = self::MODEL;
+        $tourism = new $tourism;
+        $tourism->hospital_id = $input['hospital_id'];
+        $tourism->cover_id    = $input['cover_id'];
+        $tourism->title       = $input['title'];
+        $tourism->desc        = $input['desc'];
+        $tourism->info        = $input['info'];
+        $tourism->status      = isset($input['status']) && 1 == $input['status'] ? 1 : 0;
+        
+        return $tourism;
+    }
+}

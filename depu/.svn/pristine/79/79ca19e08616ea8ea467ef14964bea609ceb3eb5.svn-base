@@ -1,0 +1,27 @@
+<?php
+
+namespace App\Models\Order\Traits\Relationship;
+
+use App\Models\Order\Order;
+use App\Models\Tourism\Tourism;
+
+/**
+ * Class OrderInfoRelationship.
+ */
+trait OrderInfoRelationship
+{
+    public function infoable()
+    {
+        return $this->morphTo();
+    }
+
+    public function order()
+    {
+        return $this->belongsTo(Order::class);
+    }
+
+    public function tourism()
+    {
+        return $this->belongsTo(Tourism::class);
+    }
+}

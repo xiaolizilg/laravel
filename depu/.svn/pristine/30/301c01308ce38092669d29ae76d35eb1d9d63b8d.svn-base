@@ -1,0 +1,30 @@
+<?php
+
+namespace App\Http\Controllers\Api\User;
+
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Uploader\ImageRequest;
+use App\Http\Requests\Uploader\FileRequest;
+use App\Repositories\UploaderRepository;
+
+class UploaderController extends Controller
+{
+    protected $uploader;
+
+    public function __construct(UploaderRepository $uploader)
+    {
+        $this->uploader = $uploader;
+    }
+
+    public function image(ImageRequest $request)
+    {
+        $image_id = $this->uploader->uploadImage($request);
+
+        return api(compact('image_id'));
+    }
+
+    public function file(FileRequest $request)
+    {
+
+    }
+}

@@ -1,0 +1,13 @@
+<?php
+
+namespace App\Models\Spot\Traits\Relationship;
+
+use App\Models\Spot\Spot;
+
+/**
+ * Class SpotRelationship.
+ */
+trait SpotRelationship
+{
+
+}

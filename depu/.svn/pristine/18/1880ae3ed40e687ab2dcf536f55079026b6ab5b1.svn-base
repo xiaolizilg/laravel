@@ -1,0 +1,111 @@
+<?php
+
+namespace App\Http\Controllers\Api\Pay;
+
+use App\Models\Order\Order;
+use App\Http\Controllers\Controller;
+use App\Repositories\Api\Order\OrderRepository;
+use App\Http\Requests\Api\Pay\CheckIsPaidRequest;
+use App\Http\Requests\Api\Pay\CallbackRequest;
+use Omnipay;
+
+class UnionpayController extends Controller
+{
+    protected $orders;
+
+    public function __construct(OrderRepository $orders)
+    {
+        $this->orders  = $orders;
+    }
+
+    public function forApp(Order $order)
+    {
+        $gateway = Omnipay::gateway('unionpay');
+
+        $order = [
+            'orderDesc' => config('app.name', '德璞凯悦'),
+            'orderId' => $order->order_code,
+            'txnAmt' => $order->money,
+            'txnTime' => date('YmdHis'),
+        ];
+
+        $tradeNo = $gateway->purchase($order)
+            ->send()
+            ->getTradeNo();
+
+        return api(compact('tradeNo', 'order_code'));
+    }
+
+    public function forPc(Order $order)
+    {
+        $gateway = Omnipay::gateway('unionpay');
+
+        $order = [
+            'orderDesc' => config('app.name', '德璞凯悦'),
+            'orderId' => $order->order_code,
+            'txnAmt' => $order->money,
+            'txnTime' => date('YmdHis'),
+        ];
+
+        $redirectUrl = $gateway->purchase($order)
+            ->send()
+            ->getRedirectHtml();
+
+        return api(compact('redirectUrl', 'order_code'));
+    }
+
+    public function check(CheckIsPaidRequest $request)
+    {
+        $order = $this->orders->findBy(['order_code' => $request->input('order_code')]);
+
+        if ((!empty($order)) && $this->_check($order)) {
+            return api([], 1);
+        }
+
+        return api([], 0);
+    }
+
+    protected function _check($order)
+    {
+        for ($i=0; $i < 3; $i++) { 
+            if ($order->running_account->status == 1) {
+                return true;
+            } else {
+                usleep(300);
+            }
+        }
+
+        return false;
+    }
+
+    public function callback(CallbackRequest $request)
+    {
+        if ($this->_success($request)) {
+            $this->orders->paidSuccess(array_merge($request->all(), ['pay_type' => 3, 'order_code' => $request->input('order_code')]));
+            die('success');
+        } else {
+            die('fail');
+        }
+
+    }
+
+    protected function _success($request)
+    {
+        return true;
+
+        $gateway = Omnipay::gateway('unionpay');
+
+        $response = $gateway->completePurchase(['request_params'=> $request->all()])->send();
+
+        try {
+            if($response->isPaid()){
+
+                return true;
+            }else{
+                return false;
+            }
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
+}

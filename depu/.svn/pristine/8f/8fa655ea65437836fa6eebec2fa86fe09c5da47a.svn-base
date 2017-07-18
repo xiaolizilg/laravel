@@ -1,0 +1,33 @@
+<?php
+
+return [
+
+    'service_mobile' => '17612888261',
+
+    'trip_infos' => [
+        0  => '国内体检',
+        1  => '行程准备',
+        2  => '保姆',
+        3  => '接机服务',
+        4  => '入住酒店',
+        5  => '前往医院',
+        6  => '医生体检',
+        7  => '促排期间',
+        8  => '取卵取精',
+        9  => '配置胚胎',
+        10 => '游玩',
+        11 => '胚胎移植',
+        12 => '验孕',
+        13 => '回国',
+    ],
+    
+    'order_infos' => [
+        'App\Models\Hospital\Hospital'  => '医院',
+        'App\Models\Hospital\Hospital'  => '医疗翻译',
+        'App\Models\Hospital\Hospital'  => '生活翻译',
+        'App\Models\Hospital\Hospital'  => '保姆',
+        'App\Models\Hospital\Hospital'  => '酒店',
+        'App\Models\Hospital\Hospital'  => '出租车',
+        'App\Models\Hospital\Hospital'  => '游玩',
+    ],
+];

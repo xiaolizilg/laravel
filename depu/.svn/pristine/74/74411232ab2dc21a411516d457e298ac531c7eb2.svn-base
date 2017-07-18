@@ -1,0 +1,16 @@
+<?php
+
+namespace App\Models\Taxi\Traits\Relationship;
+
+use App\Models\Comment\Comment;
+
+/**
+ * Class TaxiRelationship.
+ */
+trait TaxiRelationship
+{
+    public function comments()
+    {
+        return $this->morphMany(Comment::class, 'commentable');
+    }
+}

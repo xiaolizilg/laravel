@@ -1,0 +1,65 @@
+<?php
+
+namespace App\Repositories;
+
+use Illuminate\Http\Request;
+use App\Models\Image\Image;
+use App\Repositories\BaseRepository;
+use Storage;
+use Carbon\Carbon as Carbon;
+
+/**
+ * Class UploaderRepository.
+ */
+class UploaderRepository extends BaseRepository
+{
+    const IMAGE_ROOT = 'public/storage/upload/images/';
+
+    const FILE_ROOT = 'public/storage/upload/files/';
+
+    const MODEL = Image::class;
+
+    public function uploadImage(Request $request)
+    {
+        $path = self::IMAGE_ROOT . Carbon::now()->format('Ymd');
+        $md5 = md5_file($request->file('image'));
+        $ext = $request->file('image')->extension();
+
+        $name = $md5 . '.' . $ext;
+
+        if ($image = $this->query()->where(['path' => $path . '/' . $name, 'status' => 1])->first()) {
+            return $image->id;
+        }
+
+        $path = $request->file('image')->storeAs($path, $name);
+
+        if ($image = $this->query()->create(['path' => $path, 'status' => 1])) {
+            return $image->id;
+        }
+
+        throw new GeneralException('保存图片失败。');
+    }
+
+    public function crawlerImage($image_binary)
+    {
+        $path = self::IMAGE_ROOT . Carbon::now()->format('Ymd');
+        $md5 = md5($image_binary);
+        $ext = 'jpg';
+
+        $name = $md5 . '.' . $ext;
+
+        $filepath = $path . '/' . $name;
+
+        if ($image = $this->query()->where(['path' => $filepath, 'status' => 1])->first()) {
+            return $image->id;
+        }
+
+        Storage::put($filepath, $image_binary);
+
+        if ($image = $this->query()->create(['path' => $filepath, 'status' => 1])) {
+            return $image->id;
+        }
+
+        throw new GeneralException('保存图片失败。');
+    }
+}

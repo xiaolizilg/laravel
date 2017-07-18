@@ -1,0 +1,22 @@
+<?php
+
+namespace App\Models\Doctor\Traits\Relationship;
+
+use App\Models\Comment\Comment;
+use App\Models\Country\Country;
+
+/**
+ * Class DoctorRelationship.
+ */
+trait DoctorRelationship
+{
+    public function comments()
+    {
+        return $this->morphMany(Comment::class, 'commentable');
+    }
+
+    public function country()
+    {
+        return $this->belongsTo(Country::class);
+    }
+}

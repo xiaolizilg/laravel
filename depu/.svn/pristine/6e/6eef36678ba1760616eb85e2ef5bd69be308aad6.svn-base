@@ -1,0 +1,17 @@
+<?php
+
+namespace App\Models\Trip\Traits\Relationship;
+
+use App\Models\Comment\Comment;
+use App\Models\Tourism\Tourism;
+
+/**
+ * Class TripInfoRelationship.
+ */
+trait TripInfoRelationship
+{
+    public function tourism()
+    {
+        return $this->belongsTo(Tourism::class, 'service_id', 'id');
+    }
+}

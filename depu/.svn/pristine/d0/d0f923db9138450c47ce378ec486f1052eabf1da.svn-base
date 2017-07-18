@@ -1,0 +1,200 @@
+<?php $__env->startSection('title', __('backend.user.show.title')); ?>
+
+<?php $__env->startSection('content'); ?>
+<div class="row">
+    <div class="col-md-12">
+        <!-- begin profile-container -->
+        <div class="profile-container">
+            <!-- begin profile-section -->
+            <div class="profile-section">
+                <!-- begin profile-left -->
+                <div class="profile-left">
+                    <!-- begin profile-image -->
+                    <div class="profile-image">
+                        <img class="m-auto" src="<?php echo e($user->avatar); ?>" height="100%" />
+                        <i class="fa fa-user hide"></i>
+                    </div>
+                </div>
+                <!-- end profile-left -->
+                <!-- begin profile-right -->
+                <div class="profile-right">
+                    <!-- begin profile-info -->
+                    <div class="profile-info">
+                        <!-- begin table -->
+                        <div class="table-responsive">
+                            <table class="table table-profile">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>
+                                            <h4><?php echo e($user->name); ?> <small><?php echo e(in_array($user->id, config('auth.super_admins', [])) ? __('roles.useristrator') : ($user->roles->isEmpty() ? __('roles.no_roles') : $user->roles->forPage(2, 1)->implode('title', '&nbsp;&nbsp;'))); ?></small></h4>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="highlight">
+                                        <td class="field">绑定账号</td>
+                                        <td><?php echo $user->accounts->implode('name', '<br/><br/>'); ?></td>
+                                    </tr>
+                                    <tr class="divider">
+                                        <td colspan="2"></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="field">性别</td>
+                                        <td><?php echo e($user->info->sex_desc); ?></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="field">生日</td>
+                                        <td><?php echo e($user->info->birthday); ?></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="field">上次登录时间</td>
+                                        <td><?php echo e($user->extend->last_logined_at); ?></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="field">上次登录IP</td>
+                                        <td><?php echo e($user->extend->last_logined_ip); ?></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- end table -->
+                    </div>
+                    <!-- end profile-info -->
+                </div>
+                <!-- end profile-right -->
+            </div>
+            <!-- end profile-section -->
+            <!-- begin profile-section -->
+            <div class="profile-section">
+                <!-- begin row -->
+                <div class="row">
+                    <!-- begin col-4 -->
+                    <div class="col-md-4">
+                        <h4 class="title">消息 <small>56 条消息</small></h4>
+                        <!-- begin scrollbar -->
+                        <div data-scrollbar="true" data-height="280px" class="bg-silver">
+                            <!-- begin chats -->
+                            <ul class="chats">
+                                <li class="left">
+                                    <span class="date-time"><?php echo e($user->created_at); ?></span>
+                                    <a href="javascript:;" class="name"><?php echo e($user->name); ?></a>
+                                    <a href="javascript:;" class="image"><img alt="" src="<?php echo e($user->avatar); ?>"></a>
+                                    <div class="message">
+                                        我有一个问题。
+                                    </div>
+                                </li>
+                                <li class="right">
+                                    <span class="date-time"><?php echo e($user->created_at); ?></span>
+                                    <a href="#" class="name"><span class="label label-primary">ADMIN</span> 我</a>
+                                    <a href="javascript:;" class="image"><img alt="" src="<?php echo e($user->avatar); ?>"></a>
+                                    <div class="message">
+                                        你有什么问题。
+                                    </div>
+                                </li>
+                            </ul>
+                            <!-- end chats -->
+                        </div>
+                        <!-- end scrollbar -->
+                    </div>
+                    <!-- end col-4 -->
+                    <!-- begin col-4 -->
+                    <div class="col-md-4">
+                        <h4 class="title">订单 <small>3 个订单</small></h4>
+                        <!-- begin scrollbar -->
+                        <div data-scrollbar="true" data-height="280px" class="bg-silver">
+                            <!-- begin table -->
+                            <table class="table table-condensed">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>名称</th>
+                                        <th>价格</th>
+                                        <th>时间</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="col-md-1 p-r-5">
+                                            <a href="javascript:;" class="pull-left">
+                                                <img src="<?php echo e($user->avatar); ?>" width="40px" alt="">
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <h5 class="m-t-0 m-b-5">英语翻译</h5>
+                                        </td>
+                                        <td>￥349.00</td>
+                                        <td><?php echo e($user->created_at); ?></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="col-md-1 p-r-5">
+                                            <a href="javascript:;" class="pull-left">
+                                                <img src="<?php echo e($user->avatar); ?>" width="40px" alt="">
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <h5 class="m-t-0 m-b-5">英语翻译</h5>
+                                        </td>
+                                        <td>￥349.00</td>
+                                        <td><?php echo e($user->created_at); ?></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <!-- end table -->
+                        </div>
+                        <!-- end scrollbar -->
+                    </div>
+                    <!-- end col-4 -->
+                    <!-- begin col-4 -->
+                    <div class="col-md-4">
+                        <h4 class="title">任务 <small>24 个任务</small></h4>
+                        <!-- begin scrollbar -->
+                        <div data-scrollbar="true" data-height="280px" class="bg-silver">
+                            <!-- begin todolist -->
+                            <ul class="todolist">
+                                <li class="active">
+                                    <a href="javascript:;" class="todolist-container active" data-click="todolist">
+                                        <div class="todolist-input"><i class="fa fa-square-o"></i></div>
+                                        <div class="todolist-title">国内检查。</div>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="javascript:;" class="todolist-container active" data-click="todolist">
+                                        <div class="todolist-input"><i class="fa fa-square-o"></i></div>
+                                        <div class="todolist-title">国内检查。</div>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="javascript:;" class="todolist-container active" data-click="todolist">
+                                        <div class="todolist-input"><i class="fa fa-square-o"></i></div>
+                                        <div class="todolist-title">国内检查。</div>
+                                    </a>
+                                </li>
+                            </ul>
+                            <!-- end todolist -->
+                        </div>
+                        <!-- end scrollbar -->
+                    </div>
+                    <!-- end col-4 -->
+                </div>
+                <!-- end row -->
+            </div>
+            <!-- end profile-section -->
+        </div>
+        <!-- end profile-container -->
+    </div>
+</div>
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startSection('page_scripts'); ?>
+<script src="<?php echo e(asset('backend/assets/js/apps.min.js')); ?>"></script>
+<?php $__env->stopSection(); ?>
+
+<?php $__env->startSection('page_script'); ?>
+<script>
+    $(document).ready(function() {
+        App.init();
+    });
+</script>
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.backend', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

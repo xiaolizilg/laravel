@@ -1,0 +1,125 @@
+<?php
+
+namespace App\Repositories\Api\Order;
+
+use App\Models\Order\Order;
+use App\Models\Order\RunningAccount;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Collection;
+use Illuminate\Database\Eloquent\Model;
+use App\Exceptions\GeneralException;
+use App\Repositories\BaseRepository;
+// use App\Events\Api\User\UserCreated;
+use Carbon\Carbon as Carbon;
+
+/**
+ * Class OrderRepository.
+ */
+class OrderRepository extends BaseRepository
+{
+    const MODEL = Order::class;
+
+    public function create(array $data)
+    {
+        $order = $this->createOrderStub($data);
+
+        DB::transaction(function () use ($order, $data) {
+            if ($order->save()) {
+
+                $order->running_account()->create([
+                        'order_code' => $order->order_code,
+                        'account'    => $data['account'],
+                        'money'      => $data['money'],
+                        'ip'         => $data['ip'],
+                        'status'     => 2,
+                    ]);
+
+                $services = $data['services'];
+
+                $hospital = $services['hospital'];
+
+                unset($services['hospital']);
+
+                $order->order_infos()->create([
+                        'infoable_id'   => $hospital['id'],
+                        'infoable_type' => 'App\Models\Hospital\Hospital',
+                        'service_id'    => $hospital['service_id'],
+                        'real_name'     => $hospital['real_name'],
+                        'desc'          => '国际试管婴儿',
+                        'price'         => $hospital['price'],
+                        'status'        => 1,
+                    ]);
+
+                foreach ($services as $val) {
+                    $order->order_infos()->create([
+                            'infoable_id'   => $val['id'],
+                            'infoable_type' => 'App\Models\Service\Service',
+                            'service_id'    => $val['service_id'],
+                            'real_name'     => $val['real_name'],
+                            'desc'          => '描述',
+                            'price'         => $val['price'],
+                            'status'        => 1,
+                        ]);
+                }
+
+                // event(new UserCreated($order));
+
+                return true;
+            }
+
+            throw new GeneralException(__('exceptions.frontend.create_error'));
+        });
+
+        return $order->order_code;
+    }
+
+    public function paidSuccess(array $data)
+    {
+        $order = $this->findBy([
+                'order_code' => $data['order_code']
+            ]);
+
+        $order->status = 2;
+
+        DB::transaction(function () use ($order, $data) {
+            if ($order->save()) {
+
+                $order->running_account()->update([
+                        'paid_at' => time(),
+                        'pay_type' => $data['pay_type'],
+                        'status' => 1
+                    ]);
+
+                // 生成行程TOD
+
+                // event(new UserCreated($order));
+
+                return true;
+            }
+
+            throw new GeneralException(__('exceptions.frontend.create_error'));
+        });
+
+        return true;
+    }
+
+    protected function createOrderStub($input)
+    {
+        $order = self::MODEL;
+        $order = new $order;
+        $order->order_code = Carbon::now()->format('YmdHis') . str_pad(substr($input['user_id'], strlen($input['user_id']) - 4), 4, '0', STR_PAD_LEFT);
+        $order->user_id    = $input['user_id'];
+        $order->hospital   = $input['services']['hospital']['title'];
+        $order->total_price   = collect($input['services'])->pluck('price')->sum();
+        $order->money   = $input['money'];
+        $order->desc   = '国际试管婴儿';
+        $order->status     = 3;
+
+        if (2 <= count($input['services'])) {
+            $order->desc .= ' + 套餐';
+        }
+
+        return $order;
+    }
+}

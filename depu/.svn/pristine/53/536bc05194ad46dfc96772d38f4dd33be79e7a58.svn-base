@@ -1,0 +1,133 @@
+<?php
+
+namespace App\Http\Controllers\Backend\Hospital;
+
+use App\Models\ServiceMember\ServiceMember;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Repositories\Backend\Hospital\NannyRepository;
+
+class NannyController extends Controller
+{
+    protected $nannies;
+
+    public function __construct(NannyRepository $nannies)
+    {
+        $this->nannies = $nannies;
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
+    {
+        $nannies = $this->nannies->paginate();
+
+        return view('backend.hospital.nanny.index')
+            ->with(compact('nannies'));
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        return view('backend.hospital.nanny.create');
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+        $this->nannies->create([
+                'data'  => $request->all(),
+            ]);
+
+        return redirect()
+            ->route('backend.hospital.nanny.index')
+            ->with('success', __('alerts.backend.created'));
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  \App\Models\ServiceMember\ServiceMember  $nannie
+     * @return \Illuminate\Http\Response
+     */
+    public function show(ServiceMember $nannie)
+    {
+        return view('backend.hospital.nanny.show')
+            ->with(compact('nannie'));
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  \App\Models\ServiceMember\ServiceMember  $nannie
+     * @return \Illuminate\Http\Response
+     */
+    public function edit(ServiceMember $nannie)
+    {
+        return view('backend.hospital.nanny.edit')
+            ->with(compact('nannie'));
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\ServiceMember\ServiceMember  $nannie
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, ServiceMember $nannie)
+    {
+        $this->nannies->update($nannie, [
+                'data' => $request->all(),
+            ]);
+
+        return redirect()
+            ->route('backend.hospital.nanny.index')
+            ->with('success', __('alerts.backend.updated'));
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \App\Models\ServiceMember\ServiceMember  $nannie
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy(ServiceMember $nannie)
+    {
+        $this->nannies->delete($nannie);
+
+        return redirect()
+            ->route('backend.hospital.nanny.index')
+            ->with('success', __('alerts.backend.deleted'));
+    }
+
+    public function delete($id)
+    {
+        $this->nannies->forceDelete($id);
+
+        return redirect()
+            ->route('backend.hospital.nanny.deleted')
+            ->with('success', __('alerts.backend.deleted_permanently'));
+    }
+
+    public function restore($id)
+    {
+        $this->nannies->restore($id);
+
+        return redirect()
+            ->route('backend.hospital.nanny.deleted')
+            ->with('success', __('alerts.backend.restored'));
+    }
+}

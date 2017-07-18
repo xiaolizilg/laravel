@@ -1,0 +1,48 @@
+<?php
+
+namespace App\Http\Controllers\Backend\Content;
+
+use App\Models\Agreement\Agreement;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Repositories\Backend\Content\AgreementRepository;
+
+class AgreementController extends Controller
+{
+    protected $agreements;
+
+    public function __construct(AgreementRepository $agreements)
+    {
+        $this->agreements = $agreements;
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  \App\Models\Agreement\Agreement  $agreement
+     * @return \Illuminate\Http\Response
+     */
+    public function edit(Agreement $agreement)
+    {
+        return view('backend.agreement.edit')
+            ->with(compact('agreement'));
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\Agreement\Agreement  $agreement
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, Agreement $agreement)
+    {
+        $this->agreements->update([
+                'data' => $request->all(),
+            ]);
+
+        return redirect()
+            ->route('backend.content.agreement.edit')
+            ->with('success', __('alerts.backend.updated'));
+    }
+}

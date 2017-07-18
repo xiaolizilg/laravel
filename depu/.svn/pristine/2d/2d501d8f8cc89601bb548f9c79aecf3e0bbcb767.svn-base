@@ -1,0 +1,73 @@
+<?php
+
+namespace App\Http\Controllers\Api\User;
+
+use App\Models\Record\Record;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+
+class RecordController extends Controller
+{
+    protected $records;
+
+    public function __construct(Record $records)
+    {
+        $this->records = $records;
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
+    {
+        $map = ['status' => 1];
+
+        if ($request->has('started_at')) {
+            $map['started_at'] = $request->has('started_at');
+        } elseif($request->has('ended_at')) {
+            $map['ended_at'] = $request->has('ended_at');
+        }
+
+        $records = $this->records->where($map)->paginate(10, ['id', 'title', 'created_at']);
+
+        return api(compact('records'));
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+        $this->records->create([
+                'title' => $request->input('title'),
+                'started_at' => $request->input('started_at'),
+                'ended_at' => $request->input('ended_at'),
+                'image_ids' => implode(',', $request->input('image_ids')),
+            ]);
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  \App\Models\Record\Record  $record
+     * @return \Illuminate\Http\Response
+     */
+    public function show(Record $record)
+    {
+        $record = [
+            'title'      => $record->title,
+            'desc'       => $record->desc,
+            'started_at' => $record->started_at,
+            'ended_at'   => $record->ended_at,
+            'images'     => $record->images,
+        ];
+
+        return api(compact('record'));
+    }
+
+}

@@ -1,0 +1,17 @@
+<?php
+
+namespace App\Models\Order;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+
+class RunningAccount extends Model
+{
+    use SoftDeletes
+    // , OrderAttribute, OrderRelationship
+    ;
+
+    protected $guarded  = [];
+
+    protected $dates = ['deleted_at'];
+}

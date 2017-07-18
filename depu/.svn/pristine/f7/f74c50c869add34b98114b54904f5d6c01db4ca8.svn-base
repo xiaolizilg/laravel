@@ -1,0 +1,23 @@
+<?php 
+
+/**
+ * Api Controllers
+ * All route names are prefixed with 'api.'.
+ */
+
+Route::group(['prefix' => 'pay', 'as' => 'pay.', 'middleware' => 'auth:api', 'namespace' => 'Pay'], function () {
+    // AliPay
+    Route::post('alipay/check', 'AlipayController@check');
+    Route::post('alipay/callback', 'AlipayController@callback');
+    Route::post('alipay/{order}', 'AlipayController@pay');
+
+    // Wechatpay
+    Route::post('wechatpay/check', 'WechatpayController@check');
+    Route::post('wechatpay/callback', 'WechatpayController@callback');
+    Route::post('wechatpay/{order}', 'WechatpayController@pay');
+
+    // Unionpay
+    Route::post('unionpay/check', 'UnionpayController@check');
+    Route::post('unionpay/callback', 'UnionpayController@callback');
+    Route::post('unionpay/{order}', 'UnionpayController@pay');
+});

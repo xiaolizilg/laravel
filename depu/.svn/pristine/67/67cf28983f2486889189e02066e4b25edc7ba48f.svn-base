@@ -1,0 +1,156 @@
+<?php
+
+namespace App\Http\Controllers\Backend\Hospital;
+
+use App\Models\Taxi\Taxi;
+use App\Models\Hospital\Hospital;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Repositories\Backend\Hospital\TaxiRepository;
+
+class TaxiController extends Controller
+{
+    protected $taxis;
+
+    public function __construct(TaxiRepository $taxis)
+    {
+        $this->taxis = $taxis;
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index(Hospital $hospital)
+    {
+        $taxis = $hospital->taxis()->paginate(10);
+
+        return view('backend.hospital.taxi.index')
+            ->with(compact('hospital'))
+            ->with(compact('taxis'));
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create(Hospital $hospital)
+    {
+        return view('backend.hospital.taxi.create')
+            ->with(compact('hospital'));
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request, Hospital $hospital)
+    {
+        $this->taxis->create([
+                'data'  => $request->all(),
+            ]);
+
+        return redirect()
+            ->route('backend.hospital.taxi.index', $hospital->id)
+            ->with('success', __('alerts.backend.created'));
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  \App\Models\Taxi\Taxi  $taxi
+     * @return \Illuminate\Http\Response
+     */
+    public function show(Hospital $hospital, Taxi $taxi)
+    {
+        return view('backend.hospital.taxi.show')
+            ->with(compact('hospital'))
+            ->with(compact('taxi'));
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  \App\Models\Taxi\Taxi  $taxi
+     * @return \Illuminate\Http\Response
+     */
+    public function edit(Hospital $hospital, Taxi $taxi)
+    {
+        return view('backend.hospital.taxi.edit')
+            ->with(compact('hospital'))
+            ->with(compact('taxi'));
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\Taxi\Taxi  $taxi
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, Hospital $hospital, Taxi $taxi)
+    {
+        $this->taxis->update($taxi, [
+                'data' => $request->all(),
+            ]);
+
+        return redirect()
+            ->route('backend.hospital.taxi.index', $hospital->id)
+            ->with('success', __('alerts.backend.updated'));
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \App\Models\Taxi\Taxi  $taxi
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy(Hospital $hospital, Taxi $taxi)
+    {
+        $this->taxis->delete($taxi);
+
+        return redirect()
+            ->route('backend.hospital.taxi.index', $hospital->id)
+            ->with('success', __('alerts.backend.deleted'));
+    }
+
+    public function delete(Hospital $hospital, $id)
+    {
+        $this->taxis->forceDelete($id);
+
+        return redirect()
+            ->route('backend.hospital.taxi.deleted', $hospital->id)
+            ->with('success', __('alerts.backend.deleted_permanently'));
+    }
+
+    public function restore(Hospital $hospital, $id)
+    {
+        $this->taxis->restore($id);
+
+        return redirect()
+            ->route('backend.hospital.taxi.deleted', $hospital->id)
+            ->with('success', __('alerts.backend.restored'));
+    }
+
+    public function deleted(Hospital $hospital)
+    {
+        if (request()->has('search_word')) {
+            $taxis = $hospital->taxis()
+                ->onlyTrashed()
+                ->where('title', 'LIKE','%' . request()->input('search_word') . '%')
+                ->paginate(10);
+        } else {
+            $taxis = $hospital->taxis()
+                ->onlyTrashed()
+                ->paginate(10);
+        }
+
+        return view('backend.hospital.taxi.index')
+            ->with(compact('hospital'))
+            ->with(compact('taxis'));
+    }
+}

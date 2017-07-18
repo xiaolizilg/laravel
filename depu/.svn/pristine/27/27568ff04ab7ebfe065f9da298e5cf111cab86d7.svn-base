@@ -1,0 +1,35 @@
+<?php
+
+namespace App\Repositories\Backend\Content;
+
+use App\Models\Order\Order;
+use Illuminate\Support\Facades\DB;
+use App\Exceptions\GeneralException;
+use App\Repositories\BaseRepository;
+use Illuminate\Database\Eloquent\Model;
+
+/**
+ * Class OrderRepository.
+ */
+class OrderRepository extends BaseRepository
+{
+    const MODEL = Order::class;
+
+    public function update(Model $order, array $input)
+    {
+        $data = $input['data'];
+
+        $order->content   = $data['content'];
+
+        DB::transaction(function () use ($order) {
+            if ($order->save()) {
+
+                // event(new OrderUpdated($order));
+
+                return true;
+            }
+
+            throw new GeneralException(__('exceptions.backend.update_error'));
+        });
+    }
+}

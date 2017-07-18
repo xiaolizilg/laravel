@@ -1,0 +1,35 @@
+<?php
+
+namespace App\Repositories\Backend\Content;
+
+use App\Models\Trip\Trip;
+use Illuminate\Support\Facades\DB;
+use App\Exceptions\GeneralException;
+use App\Repositories\BaseRepository;
+use Illuminate\Database\Eloquent\Model;
+
+/**
+ * Class TripRepository.
+ */
+class TripRepository extends BaseRepository
+{
+    const MODEL = Trip::class;
+
+    public function update(Model $trip, array $input)
+    {
+        $data = $input['data'];
+
+        $trip->content   = $data['content'];
+
+        DB::transaction(function () use ($trip) {
+            if ($trip->save()) {
+
+                // event(new TripUpdated($trip));
+
+                return true;
+            }
+
+            throw new GeneralException(__('exceptions.backend.update_error'));
+        });
+    }
+}

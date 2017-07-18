@@ -1,0 +1,136 @@
+<?php
+
+namespace App\Repositories\Backend\Content;
+
+use App\Models\Hosipital\Hosipital;
+use Illuminate\Support\Facades\DB;
+use App\Exceptions\GeneralException;
+use App\Repositories\BaseRepository;
+use Illuminate\Database\Eloquent\Model;
+
+/**
+ * Class HosipitalRepository.
+ */
+class HosipitalRepository extends BaseRepository
+{
+    const MODEL = Hosipital::class;
+
+    public function create(array $input)
+    {
+        $data = $input['data'];
+
+        $hosipital = $this->createHosipitalStub($data);
+
+        DB::transaction(function () use ($hosipital) {
+            if ($hosipital->save()) {
+
+                // event(new HosipitalCreated($hosipital));
+
+                return true;
+            }
+
+            throw new GeneralException(__('exceptions.backend.create_error'));
+        });
+    }
+
+    public function update(Model $hosipital, array $input)
+    {
+        $data = $input['data'];
+
+        $hosipital->country_id         = $data['country_id'];
+        $hosipital->cover_id           = $data['cover_id'];
+        $hosipital->title              = $data['title'];
+        $hosipital->desc               = $data['desc'];
+        $hosipital->info               = $data['info'];
+        $hosipital->address_zh         = $data['address_zh'];
+        $hosipital->address_en         = $data['address_en'];
+        $hosipital->price              = $data['price'];
+        $hosipital->success_rate       = $data['success_rate'];
+        $hosipital->treatment_numbers  = $data['treatment_numbers'];
+        $hosipital->department_numbers = $data['department_numbers'];
+        $hosipital->bed_numbers        = $data['bed_numbers'];
+
+        DB::transaction(function () use ($hosipital) {
+            if ($hosipital->save()) {
+
+                // event(new HosipitalUpdated($hosipital));
+
+                return true;
+            }
+
+            throw new GeneralException(__('exceptions.backend.update_error'));
+        });
+    }
+
+    public function delete(Model $hosipital)
+    {
+        if ($hosipital->is_system == 1) {
+            throw new GeneralException(__('exceptions.backend.cant_delete_system'));
+        }
+        
+        if ($hosipital->delete()) {
+            // event(new HosipitalDeleted($hosipital));
+
+            return true;
+        }
+
+        throw new GeneralException(__('exceptions.backend.delete_error'));
+    }
+
+    public function forceDelete($id)
+    {
+        $hosipital = $this->query()->withTrashed()->find($id);
+
+        if (is_null($hosipital->deleted_at)) {
+            throw new GeneralException(__('exceptions.backend.delete_first'));
+        }
+
+        DB::transaction(function () use ($hosipital) {
+            if ($hosipital->forceDelete()) {
+                // event(new HosipitalPermanentlyDeleted($hosipital));
+
+                return true;
+            }
+
+            throw new GeneralException(__('exceptions.backend.delete_error'));
+        });
+    }
+
+    public function restore($id)
+    {
+        $hosipital = $this->query()->withTrashed()->find($id);
+
+        if (is_null($hosipital->deleted_at)) {
+            throw new GeneralException(trans('exceptions.backend.cant_restore'));
+        }
+
+        if ($hosipital->restore()) {
+            // event(new HosipitalRestored($hosipital));
+
+            return true;
+        }
+
+        throw new GeneralException(trans('exceptions.backend.restore_error'));
+    }
+
+    protected function createHosipitalStub($input)
+    {
+        $hosipital = self::MODEL;
+        $hosipital = new $hosipital;
+        $hosipital->country_id         = $input['country_id'];
+        $hosipital->cover_id           = $input['cover_id'];
+        $hosipital->title              = $input['title'];
+        $hosipital->desc               = $input['desc'];
+        $hosipital->info               = $input['info'];
+        $hosipital->address_zh         = $input['address_zh'];
+        $hosipital->address_en         = $input['address_en'];
+        $hosipital->price              = $input['price'];
+        $hosipital->success_rate       = $input['success_rate'];
+        $hosipital->treatment_numbers  = $input['treatment_numbers'];
+        $hosipital->department_numbers = $input['department_numbers'];
+        $hosipital->bed_numbers        = $input['bed_numbers'];
+        $hosipital->status             = isset($input['status']) && 1 == $input['status'] ? 1 : 0;
+        
+        return $hosipital;
+    }
+}

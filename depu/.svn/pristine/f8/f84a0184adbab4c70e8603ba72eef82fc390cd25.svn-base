@@ -1,0 +1,133 @@
+<?php
+
+namespace App\Http\Controllers\Backend\Hospital;
+
+use App\Models\Hotal\Hotal;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Repositories\Backend\Hospital\HotalRepository;
+
+class HotalController extends Controller
+{
+    protected $hotals;
+
+    public function __construct(HotalRepository $hotals)
+    {
+        $this->hotals = $hotals;
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
+    {
+        $hotals = $this->hotals->paginate();
+
+        return view('backend.hospital.hotal.index')
+            ->with(compact('hotals'));
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        return view('backend.hospital.hotal.create');
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+        $this->hotals->create([
+                'data'  => $request->all(),
+            ]);
+
+        return redirect()
+            ->route('backend.hospital.hotal.index')
+            ->with('success', __('alerts.backend.created'));
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  \App\Models\Hotal\Hotal  $hotal
+     * @return \Illuminate\Http\Response
+     */
+    public function show(Hotal $hotal)
+    {
+        return view('backend.hospital.hotal.show')
+            ->with(compact('hotal'));
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  \App\Models\Hotal\Hotal  $hotal
+     * @return \Illuminate\Http\Response
+     */
+    public function edit(Hotal $hotal)
+    {
+        return view('backend.hospital.hotal.edit')
+            ->with(compact('hotal'));
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\Hotal\Hotal  $hotal
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, Hotal $hotal)
+    {
+        $this->hotals->update($hotal, [
+                'data' => $request->all(),
+            ]);
+
+        return redirect()
+            ->route('backend.hospital.hotal.index')
+            ->with('success', __('alerts.backend.updated'));
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \App\Models\Hotal\Hotal  $hotal
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy(Hotal $hotal)
+    {
+        $this->hotals->delete($hotal);
+
+        return redirect()
+            ->route('backend.hospital.hotal.index')
+            ->with('success', __('alerts.backend.deleted'));
+    }
+
+    public function delete($id)
+    {
+        $this->hotals->forceDelete($id);
+
+        return redirect()
+            ->route('backend.hospital.hotal.deleted')
+            ->with('success', __('alerts.backend.deleted_permanently'));
+    }
+
+    public function restore($id)
+    {
+        $this->hotals->restore($id);
+
+        return redirect()
+            ->route('backend.hospital.hotal.deleted')
+            ->with('success', __('alerts.backend.restored'));
+    }
+}

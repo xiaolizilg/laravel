@@ -1,0 +1,16 @@
+<?php
+
+namespace App\Models\Hotal\Traits\Relationship;
+
+use App\Models\Comment\Comment;
+
+/**
+ * Class HotalRelationship.
+ */
+trait HotalRelationship
+{
+    public function comments()
+    {
+        return $this->morphMany(Comment::class, 'commentable');
+    }
+}

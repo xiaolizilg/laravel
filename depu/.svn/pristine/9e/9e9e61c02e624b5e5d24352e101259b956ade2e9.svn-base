@@ -1,0 +1,22 @@
+<?php
+
+namespace App\Models\Order\Traits\Relationship;
+
+use App\Models\Order\OrderInfo;
+use App\Models\Order\RunningAccount;
+
+/**
+ * Class OrderRelationship.
+ */
+trait OrderRelationship
+{
+    public function running_account()
+    {
+        return $this->hasOne(RunningAccount::class);
+    }
+
+    public function order_infos()
+    {
+        return $this->hasMany(OrderInfo::class);
+    }
+}

@@ -1,0 +1,133 @@
+<?php
+
+namespace App\Http\Controllers\Backend\Hospital;
+
+use App\Models\Taxi\Taxi;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Repositories\Backend\Hospital\TaxiRepository;
+
+class TaxiController extends Controller
+{
+    protected $taxis;
+
+    public function __construct(TaxiRepository $taxis)
+    {
+        $this->taxis = $taxis;
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
+    {
+        $taxis = $this->taxis->paginate();
+
+        return view('backend.hospital.taxi.index')
+            ->with(compact('taxis'));
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        return view('backend.hospital.taxi.create');
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+        $this->taxis->create([
+                'data'  => $request->all(),
+            ]);
+
+        return redirect()
+            ->route('backend.hospital.taxi.index')
+            ->with('success', __('alerts.backend.created'));
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  \App\Models\Taxi\Taxi  $taxi
+     * @return \Illuminate\Http\Response
+     */
+    public function show(Taxi $taxi)
+    {
+        return view('backend.hospital.taxi.show')
+            ->with(compact('taxi'));
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  \App\Models\Taxi\Taxi  $taxi
+     * @return \Illuminate\Http\Response
+     */
+    public function edit(Taxi $taxi)
+    {
+        return view('backend.hospital.taxi.edit')
+            ->with(compact('taxi'));
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\Taxi\Taxi  $taxi
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, Taxi $taxi)
+    {
+        $this->taxis->update($taxi, [
+                'data' => $request->all(),
+            ]);
+
+        return redirect()
+            ->route('backend.hospital.taxi.index')
+            ->with('success', __('alerts.backend.updated'));
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \App\Models\Taxi\Taxi  $taxi
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy(Taxi $taxi)
+    {
+        $this->taxis->delete($taxi);
+
+        return redirect()
+            ->route('backend.hospital.taxi.index')
+            ->with('success', __('alerts.backend.deleted'));
+    }
+
+    public function delete($id)
+    {
+        $this->taxis->forceDelete($id);
+
+        return redirect()
+            ->route('backend.hospital.taxi.deleted')
+            ->with('success', __('alerts.backend.deleted_permanently'));
+    }
+
+    public function restore($id)
+    {
+        $this->taxis->restore($id);
+
+        return redirect()
+            ->route('backend.hospital.taxi.deleted')
+            ->with('success', __('alerts.backend.restored'));
+    }
+}

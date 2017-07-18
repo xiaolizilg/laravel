@@ -1,0 +1,11 @@
+<?php
+
+namespace App\Models\Reply\Traits\Relationship;
+
+/**
+ * Class ReplyRelationship.
+ */
+trait ReplyRelationship
+{
+
+}

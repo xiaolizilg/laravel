@@ -1,0 +1,151 @@
+<?php
+
+namespace App\Http\Controllers\Backend\Hospital;
+
+use App\Models\ServiceMember\ServiceMember;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Repositories\Backend\Hospital\LifeTranslationRepository;
+use App\Repositories\Backend\Project\CountryRepository;
+
+class LifeTranslationController extends Controller
+{
+    protected $lifes;
+
+    public function __construct(LifeTranslationRepository $lifes)
+    {
+        $this->lifes = $lifes;
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
+    {
+        $lifes = $this->lifes->paginate();
+
+        return view('backend.hospital.life.index')
+            ->with(compact('lifes'));
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create(CountryRepository $countries)
+    {
+        return view('backend.hospital.life.create')
+            ->with(['countries' => $countries->getAll()]);
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+        $this->lifes->create([
+                'data'  => $request->all(),
+            ]);
+
+        return redirect()
+            ->route('backend.hospital.life.index')
+            ->with('success', __('alerts.backend.created'));
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  \App\Models\ServiceMember\ServiceMember  $life
+     * @return \Illuminate\Http\Response
+     */
+    public function show(ServiceMember $life)
+    {
+        return view('backend.hospital.life.show')
+            ->with(compact('life'));
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  \App\Models\ServiceMember\ServiceMember  $life
+     * @return \Illuminate\Http\Response
+     */
+    public function edit(ServiceMember $life, CountryRepository $countries)
+    {
+        return view('backend.hospital.life.edit')
+            ->with(['countries' => $countries->getAll()])
+            ->with(compact('life'));
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\ServiceMember\ServiceMember  $life
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, ServiceMember $life)
+    {
+        $this->lifes->update($life, [
+                'data' => $request->all(),
+            ]);
+
+        return redirect()
+            ->route('backend.hospital.life.index')
+            ->with('success', __('alerts.backend.updated'));
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \App\Models\ServiceMember\ServiceMember  $life
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy(ServiceMember $life)
+    {
+        $this->lifes->delete($life);
+
+        return redirect()
+            ->route('backend.hospital.life.index')
+            ->with('success', __('alerts.backend.deleted'));
+    }
+
+    public function delete($id)
+    {
+        $this->lifes->forceDelete($id);
+
+        return redirect()
+            ->route('backend.hospital.life.deleted')
+            ->with('success', __('alerts.backend.deleted_permanently'));
+    }
+
+    public function restore($id)
+    {
+        $this->lifes->restore($id);
+
+        return redirect()
+            ->route('backend.hospital.life.deleted')
+            ->with('success', __('alerts.backend.restored'));
+    }
+
+    public function deleted()
+    {
+        if (request()->has('search_word')) {
+            $lifes = $this->lifes->searchDeletedPaginate([
+                    'title',
+                    '%' . request()->input('search_word') . '%'
+                ]);
+        } else {
+            $lifes = $this->lifes->deletedPaginate();
+        }
+
+        return view('backend.hospital.life.index')
+            ->with(compact('lifes'));
+    }
+}

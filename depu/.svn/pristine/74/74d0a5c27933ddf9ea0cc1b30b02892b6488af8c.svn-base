@@ -1,0 +1,106 @@
+<?php
+
+namespace App\Http\Controllers\Api\User;
+
+use App\Models\Hotal\Hotal;
+use App\Models\Doctor\Doctor;
+use App\Models\Tourism\Tourism;
+use App\Models\Hospital\Hospital;
+use App\Models\Taxi\Taxi;
+use App\Models\ServiceMember\ServiceMember;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\User\CommentRequest;
+
+class CommentController extends Controller
+{
+    public function hospital(CommentRequest $request, Hospital $hospital)
+    {
+        $image_ids = $request->has('image_ids') ? $request->input('image_ids') : [];
+
+        $hospital->comments()->create([
+                'user_id'   => auth()->user()->user_id,
+                'starts'    => $request->input('starts'),
+                'image_ids' => implode(',', $image_ids),
+                'content'   => $request->input('content'),
+                'status'    => 1,
+            ]);
+
+        return api();
+    }
+
+    public function doctor(CommentRequest $request, Doctor $doctor)
+    {
+        $image_ids = $request->has('image_ids') ? $request->input('image_ids') : [];
+
+        $doctor->comments()->create([
+                'user_id'   => auth()->user()->user_id,
+                'starts'    => $request->input('starts'),
+                'image_ids' => implode(',', $image_ids),
+                'content'   => $request->input('content'),
+                'status'    => 1,
+            ]);
+
+        return api();
+    }
+
+    public function member(CommentRequest $request, ServiceMember $member)
+    {
+        $image_ids = $request->has('image_ids') ? $request->input('image_ids') : [];
+
+        $member->comments()->create([
+                'user_id'   => auth()->user()->user_id,
+                'starts'    => $request->input('starts'),
+                'image_ids' => implode(',', $image_ids),
+                'content'   => $request->input('content'),
+                'status'    => 1,
+            ]);
+
+        return api();
+    }
+
+    public function taxi(CommentRequest $request, Taxi $taxi)
+    {
+        $image_ids = $request->has('image_ids') ? $request->input('image_ids') : [];
+
+        $taxi->comments()->create([
+                'user_id'   => auth()->user()->user_id,
+                'starts'    => $request->input('starts'),
+                'image_ids' => implode(',', $image_ids),
+                'content'   => $request->input('content'),
+                'status'    => 1,
+            ]);
+
+        return api();
+    }
+
+    public function hotal(CommentRequest $request, Hotal $hotal)
+    {
+        $image_ids = $request->has('image_ids') ? $request->input('image_ids') : [];
+
+        $hotal->comments()->create([
+                'user_id'   => auth()->user()->user_id,
+                'starts'    => $request->input('starts'),
+                'image_ids' => implode(',', $image_ids),
+                'content'   => $request->input('content'),
+                'status'    => 1,
+            ]);
+
+        return api();
+    }
+
+    public function tourism(CommentRequest $request, Tourism $tourism)
+    {
+        $image_ids = $request->has('image_ids') ? $request->input('image_ids') : [];
+
+        $tourism->comments()->create([
+                'user_id'   => auth()->user()->user_id,
+                'starts'    => $request->input('starts'),
+                'image_ids' => implode(',', $image_ids),
+                'content'   => $request->input('content'),
+                'status'    => 1,
+            ]);
+
+        return api();
+    }
+
+}
