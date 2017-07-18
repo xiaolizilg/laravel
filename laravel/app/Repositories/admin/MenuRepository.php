@@ -11,20 +11,30 @@ Class MenuRepository extends BaseRepository{
 	 * 创建数据
 	 */
  	public  function create($data){
+
+ 		//dd($data);
+
+ 		/*  "_token" => "SrGnyjkYIeArYv8WFUMdXoXIsLXs49fVNTdIoslU"
+		  "name" => "gaobo"
+		  "controller" => "Test" //控制器名字
+		  "icon" => "icon"   //图标
+		  "is_auto" => "1"  //选择类型  1自动生成 ，0空控制器
+		  "is_temp" => "1"  //是否选择模板，1创建视图，0默认视图*/
+
  	
  		//是否创建控制器
  		if ($data['is_auto']  == 1) {
-
  			$this->store($data);
  			return true;
  		}
 
  		//创建空控制器
- 		$menu =  $this->info($data);
- 		if($menu->save()){
- 			return true;
- 		}
+ 		$menu  =  new menu();
+ 		if($menu->isEmpty($data)) {
 
+ 	        return true;
+ 		}
+ 		
  		throw new GeneralException(__('exceptions.backend.create_error'));
 
  	}
@@ -36,18 +46,21 @@ Class MenuRepository extends BaseRepository{
 
 	public  function store($data){
 
-		//创建控制器和文件,方法  index,add，edit,del 
-
-		if ($data['is_temp'] == 1) {
+			//创建控制器和文件,方法  index,add，edit,del 
 			$menu  =  new menu();
+
 			//创建控制器
 			$menu->indexMethod($data);
+			$menu->repositor($data);
+
 			//创建模板
-			$menu->addIndex($data);
+			if ($data['is_temp'] == 1) {
+			
+				$menu->addIndex($data);
+			}
 
+		
 			return  true;
-		}
-
 	}
 
 

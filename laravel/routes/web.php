@@ -120,5 +120,9 @@ Route::group(['middleware'=>['isLogin'],'prefix' =>'admin','namespace' =>'admin'
         Route::get('advsposition/status','AdvsPositionController@status');
 
 
+        //测试
+
+        Route::get('pic/index', 'PicController@index');
+
 });
 

@@ -5,6 +5,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\admin\Traits\menu\Temp;
 use App\Models\admin\Traits\menu\Method;
+use App\Models\admin\Traits\menu\Attr;
 
 /**
  * 菜单管理
@@ -13,7 +14,7 @@ use App\Models\admin\Traits\menu\Method;
 Class Menu   extends Model{
 
 
-	use Temp,Method;
+	use Temp,Method,Attr;
 
 	protected  $table = 'menu';
 	public     $timestamps = true;

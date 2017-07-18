@@ -1,21 +1,13 @@
-<?php
-namespace App\Models\Admin\Traits\menu;
 
-Trait Attr{
-
-	public   function  repositor($data){
-
-
-$file =  '
 
 <?php
 namespace App\Repositories\admin;
-use App\Models\admin\ '.$data['controller'].';
+use App\Models\admin\ Test;
 use App\Repositories\admin\BsseRepository;
 
-Class '.$data['controller'].'Repository extends BaseRepository{
+Class TestRepository extends BaseRepository{
 
-	const MODEL = '.$data['controller'].'::class;
+	const MODEL = Test::class;
 
 	/**
 	 * 创建数据
@@ -78,7 +70,7 @@ Class '.$data['controller'].'Repository extends BaseRepository{
 
 	public function info($data){
 
-		$'.$data['controller'].' =  new '.$data['controller'].'();
+		$Test =  new Test();
 		$solt  =  rand(100000,999999);
 		$admin->user_name =  $data["user_name"];
 		$admin->password  =  md5($data["password"].$solt);
@@ -92,23 +84,4 @@ Class '.$data['controller'].'Repository extends BaseRepository{
 	}
 
 
-}';
-
-
-
-
-
-
-
-		// 保存文件
-        $file_name = app_path().'/Repositories/admin/'.$data['controller'].'Repository.php';
-        file_put_contents($file_name, $file);	
-
-	}
-
-
-
 }
-
-
-?>
